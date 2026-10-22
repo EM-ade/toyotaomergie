@@ -230,7 +230,7 @@
     margin-top: 1.6em;
   }
 
-  /* Hairline rule — the primary structural device of the system. */
+  /* Hairline rule Ã¢â‚¬â€ the primary structural device of the system. */
   .rule {
     border-top: 1px solid var(--line);
   }
@@ -394,7 +394,7 @@
   .chip--unverified {
     border-style: dashed;
   }
-  /* Soft, non-alarming status chip — used where a model simply needs a dealer
+  /* Soft, non-alarming status chip Ã¢â‚¬â€ used where a model simply needs a dealer
      to confirm stock, rather than flagging a data problem. */
   .chip--soft {
     border-color: color-mix(in srgb, var(--surface-raised) 70%, transparent);
@@ -541,7 +541,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   ImageFrame — real asset or designed placeholder.
+   ImageFrame Ã¢â‚¬â€ real asset or designed placeholder.
 --------------------------------------------------------------------------- */
 @layer components {
   .image-frame {
@@ -681,7 +681,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Section + section head — the page rhythm.
+   Section + section head Ã¢â‚¬â€ the page rhythm.
 --------------------------------------------------------------------------- */
 @layer components {
   .section {
@@ -784,7 +784,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Accordion — FAQ and specification groups. Native details semantics.
+   Accordion Ã¢â‚¬â€ FAQ and specification groups. Native details semantics.
 --------------------------------------------------------------------------- */
 @layer components {
   .accordion {
@@ -923,7 +923,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Page hero — editorial interior-page header.
+   Page hero Ã¢â‚¬â€ editorial interior-page header.
 --------------------------------------------------------------------------- */
 @layer components {
   .page-hero {
@@ -979,7 +979,7 @@
 
 
 /* ---------------------------------------------------------------------------
-   Masthead — brand layer + primary nav + mega menu
+   Masthead Ã¢â‚¬â€ brand layer + primary nav + mega menu
 --------------------------------------------------------------------------- */
 @layer components {
   .masthead {
@@ -1143,7 +1143,7 @@
     display: inline-block;
     padding-block: 0.35rem;
   }
-  /* The red rule under an active nav item — one of the sanctioned uses of red.
+  /* The red rule under an active nav item Ã¢â‚¬â€ one of the sanctioned uses of red.
      `top: 100%` puts it directly beneath the text, not across it. */
   .nav__label::after {
     content: "";
@@ -1562,7 +1562,7 @@
     font-weight: 700;
   }
   .footer__unbuilt[open] summary::before {
-    content: "–";
+    content: "Ã¢â‚¬â€œ";
   }
   .footer__unbuilt ul {
     list-style: none;
@@ -1763,7 +1763,7 @@
     background: var(--red);
   }
 
-  /* Row variant — used inside editorial directories. It is a list row, not a
+  /* Row variant Ã¢â‚¬â€ used inside editorial directories. It is a list row, not a
      contained showroom unit, so it reverts the card container treatment. */
   .vcard--row {
     flex-direction: row;
@@ -2321,7 +2321,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Statblock — a small, evidence-led figure set.
+   Statblock Ã¢â‚¬â€ a small, evidence-led figure set.
 --------------------------------------------------------------------------- */
 @layer components {
   .statblock {
@@ -2357,7 +2357,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Vehicle browser — filters + results.
+   Vehicle browser Ã¢â‚¬â€ filters + results.
 --------------------------------------------------------------------------- */
 @layer components {
   .browser {
@@ -2447,7 +2447,7 @@
     .browser__grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
-    /* The lead card spans two columns — the index is not a uniform grid. */
+    /* The lead card spans two columns Ã¢â‚¬â€ the index is not a uniform grid. */
     .browser__grid > li:first-child {
       grid-column: span 2;
     }
@@ -3700,7 +3700,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Motion utilities — reveals are opt-in and always reduced-motion aware.
+   Motion utilities Ã¢â‚¬â€ reveals are opt-in and always reduced-motion aware.
 --------------------------------------------------------------------------- */
 @layer utilities {
   .reveal {
@@ -3744,7 +3744,7 @@
 }
 
 /* ===========================================================================
-   CERTIFIED SHOWROOM — component layer.
+   CERTIFIED SHOWROOM Ã¢â‚¬â€ component layer.
    Overrides the base rules with the bright, technical showroom register:
    grotesque type, white canvas, rounded cards, strong red actions.
    =========================================================================== */
@@ -4585,5 +4585,56 @@
     .page-hero__grid:not(:has(.page-hero__aside)) .page-hero__lead {
       max-width: 34ch;
     }
+  }
+}
+
+@layer components {
+  /* -- Homepage range grid --------------------------------------------
+     Four models, four equal cards. No feature card and no orphaned rows:
+     1-up on phones, 2-up on tablets, 4-up on desktop. The first card is
+     emphasised only by its red CTA, keeping the grid perfectly even.    */
+  .range-grid {
+    margin-top: var(--space-xl);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-md);
+    align-items: stretch;
+  }
+  .range-grid > .reveal {
+    display: flex;
+    min-width: 0;
+  }
+  .range-grid > .reveal > .vcard {
+    width: 100%;
+  }
+  @media (min-width: 560px) {
+    .range-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1180px) {
+    .range-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-md);
+    }
+  }
+  /* Uniform photo ratio across all cards so the row lines up exactly. */
+  .range-grid .vcard__media .image-frame {
+    aspect-ratio: 4 / 3 !important;
+  }
+  .range-grid .vcard__name {
+    font-size: var(--step-2);
+  }
+  .range-grid .vcard__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2xs);
+  }
+  .range-grid .vcard__enquire {
+    min-width: 0;
+    justify-content: center;
+  }
+  .range-grid .vcard__detail {
+    align-self: flex-start;
   }
 }

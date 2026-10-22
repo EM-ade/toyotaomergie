@@ -33,7 +33,15 @@ export const metadata = pageMetadata({
 });
 
 const heroVehicle = vehicles.find((v) => v.slug === "prado") ?? evidencedVehicles[0];
-const showcaseVehicles = ["prado", "hilux", "rav4", "camry", "corolla", "land-cruiser"]
+
+/**
+ * Homepage range: exactly four models, laid out as one wide feature card plus
+ * three standard cards so every row stays full at every breakpoint.
+ */
+const primarySlug = "prado";
+const secondarySlugs = ["hilux", "rav4", "camry"];
+const featureVehicle = vehicles.find((v) => v.slug === primarySlug);
+const gridVehicles = secondarySlugs
   .map((slug) => vehicles.find((v) => v.slug === slug))
   .filter(Boolean) as typeof vehicles;
 
@@ -89,17 +97,17 @@ export default function HomePage() {
             }
           />
 
-          <div className="showcase">
-            <Reveal className="showcase__lead">
-              <VehicleCard vehicle={showcaseVehicles[0]} variant="feature" />
-            </Reveal>
-            <div className="showcase__grid">
-              {showcaseVehicles.slice(1).map((v, i) => (
-                <Reveal key={v.slug} delay={70 + i * 50}>
-                  <VehicleCard vehicle={v} />
-                </Reveal>
-              ))}
-            </div>
+          <div className="range-grid">
+            {featureVehicle && (
+              <Reveal className="range-grid__item">
+                <VehicleCard vehicle={featureVehicle} />
+              </Reveal>
+            )}
+            {gridVehicles.map((v, i) => (
+              <Reveal key={v.slug} className="range-grid__item" delay={60 + i * 50}>
+                <VehicleCard vehicle={v} />
+              </Reveal>
+            ))}
           </div>
         </div>
       </Section>
