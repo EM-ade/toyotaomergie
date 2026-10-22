@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { PageHero } from "@/components/PageHero";
 import { Section, SectionHead } from "@/components/Section";
-import { Gallery } from "@/components/Gallery";
 import { SpecTable } from "@/components/SpecTable";
 import { VehicleCard } from "@/components/VehicleCard";
-import { Chip, TextLink } from "@/components/ui";
-import { ArrowRight, WhatsApp } from "@/components/icons";
+import { VehicleHero } from "@/components/VehicleHero";
+import { Chip } from "@/components/ui";
+import { ArrowRight } from "@/components/icons";
 import { vehicleBySlug, vehicles } from "@/content/vehicles";
 import { waHref } from "@/content/site";
 import { pageMetadata } from "@/lib/metadata";
@@ -50,103 +49,38 @@ export default async function VehicleDetailPage({
 
   return (
     <>
-      <PageHero
-        eyebrow={vehicle.tagline ?? vehicle.family}
-        title={vehicle.name}
-        lede={vehicle.summary}
-        crumbs={[
-          { label: "Home", href: "/" },
-          { label: "Vehicles", href: "/vehicles" },
-          { label: vehicle.name },
-        ]}
-        actions={
-          <>
-            <a
-              href={waHref(`Hello Omoregie Motors, I'd like to enquire about the ${vehicle.name}.`)}
-              className="btn btn--primary"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <WhatsApp width={16} height={16} />
-              Enquire on WhatsApp
-            </a>
-            <Link
-              href={`/contact?vehicle=${encodeURIComponent(vehicle.slug)}`}
-              className="btn btn--outline"
-            >
-              Request price
-            </Link>
-            <Link href="/service/request" className="btn btn--outline">
-              Book a test drive
-            </Link>
-          </>
-        }
-        aside={
-          <div className="detailmeta">
-            <dl>
-              <div>
-                <dt>Body type</dt>
-                <dd>{vehicle.bodyType}</dd>
-              </div>
-              <div>
-                <dt>Model family</dt>
-                <dd>{vehicle.family}</dd>
-              </div>
-              <div>
-                <dt>Price</dt>
-                <dd>On request</dd>
-              </div>
-              <div>
-                <dt>Availability</dt>
-                <dd>Available through Omoregie Motors</dd>
-              </div>
-            </dl>
-          </div>
-        }
+      <VehicleHero
+        name={vehicle.name}
+        family={vehicle.family}
+        bodyType={vehicle.bodyType}
+        tagline={vehicle.tagline}
+        summary={vehicle.summary}
+        images={[vehicle.hero, ...vehicle.gallery]}
+        enquireHref={waHref(
+          `Hello Omoregie Motors, I'd like to enquire about the ${vehicle.name}.`,
+        )}
+        priceHref={`/contact?vehicle=${encodeURIComponent(vehicle.slug)}`}
+        testDriveHref="/service/request"
       />
 
-      {/* Gallery + highlights */}
-      <Section tone="paper" pad="md">
-        <div className="shell detail-grid">
-          <div className="detail-grid__media">
-            <Gallery images={[vehicle.hero, ...vehicle.gallery]} name={vehicle.name} />
-          </div>
-
-          <div className="detail-grid__aside">
-            {vehicle.highlights.length > 0 ? (
-              <>
-                <p className="eyebrow eyebrow--red">At a glance</p>
-                <ul className="detail-highlights">
-                  {vehicle.highlights.map((h, i) => (
-                    <li key={`aside-${i}`}>{h}</li>
-                  ))}
-                </ul>
-              </>
-            ) : (
-              <div className="detail-callout">
-                <p className="eyebrow eyebrow--red">Available to order</p>
-                <p className="prose-body">
-                  The {vehicle.name} is part of the Toyota range we supply.
-                  Specification, trim and current price for the Nigerian market
-                  are confirmed by our sales team — talk to us to order.
-                </p>
-              </div>
-            )}
-
-            <div className="detail-actions">
-              <TextLink href="/dealers" icon={<ArrowRight width={14} height={14} />}>
-                Visit our showroom
-              </TextLink>
-              <TextLink
-                href={`/contact?vehicle=${encodeURIComponent(vehicle.slug)}`}
-                icon={<ArrowRight width={14} height={14} />}
-              >
-                Request price for the {vehicle.name}
-              </TextLink>
+      {/* Highlights */}
+      {vehicle.highlights.length > 0 && (
+        <Section tone="paper" pad="md" aria-labelledby="highlights-title">
+          <div className="shell vfeatures">
+            <div className="vfeatures__head">
+              <p className="eyebrow eyebrow--red">At a glance</p>
+              <h2 id="highlights-title" className="display-4">
+                Key features.
+              </h2>
             </div>
+            <ul className="vfeatures__list">
+              {vehicle.highlights.map((h, i) => (
+                <li key={`h-${i}`}>{h}</li>
+              ))}
+            </ul>
           </div>
-        </div>
-      </Section>
+        </Section>
+      )}
 
       {/* Specifications */}
       <Section tone="sunk" pad="md" aria-labelledby="specs-title">

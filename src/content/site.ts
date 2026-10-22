@@ -73,6 +73,10 @@ const modelChildren = [
 
 export const primaryNav: NavItem[] = [
   {
+    label: "About",
+    href: "/about",
+  },
+  {
     label: "Vehicles",
     href: "/vehicles",
     groups: [
@@ -205,46 +209,6 @@ export const primaryNav: NavItem[] = [
       },
     },
   },
-  {
-    label: "About",
-    href: "/about",
-    groups: [
-      {
-        label: "The dealer",
-        children: [
-          { label: "About us", href: "/about", description: "Serving Nigeria since 1978" },
-          { label: "Why Omoregie", href: "/why-toyota", description: "Why buy from us" },
-          { label: "Our values", href: "/about#values", description: "What guides us" },
-        ],
-      },
-      {
-        label: "Fleet & government",
-        children: [
-          { label: "Procurement", href: "/procurement", description: "Corporate & institutional supply" },
-          { label: "Fleet vehicles", href: "/procurement#fleet", description: "Vehicles for fleet deployment" },
-        ],
-      },
-      {
-        label: "More",
-        children: [
-          { label: "News & media", href: "/media", description: "Latest from Omoregie" },
-          { label: "Contact us", href: "/contact", description: "Talk to our team" },
-        ],
-      },
-    ],
-    feature: {
-      label: "Since 1978",
-      href: "/about",
-      title: "Authentic Toyota, locally.",
-      body: "An accredited Toyota dealer in Nigeria since 1978 — brand-new vehicles, genuine parts and aftersales under one relationship.",
-      image: {
-        src: "/images/dealer/showroom-pylon.jpg",
-        alt: "Omoregie Motors Toyota pylon",
-        subject: "Omoregie Motors",
-        aspect: "4 / 3",
-      },
-    },
-  },
 ];
 
 export const utilityNav = {
@@ -253,7 +217,6 @@ export const utilityNav = {
     { label: "Book a service", href: "/service/request" },
     { label: "Contact", href: "/contact" },
   ],
-  secondary: [{ label: "News", href: "/media" }],
 };
 
 /* ---------------------------------------------------------------------------
@@ -297,8 +260,6 @@ export const footerColumns: { title: string; links: { label: string; href: strin
     links: [
       { label: "About us", href: "/about" },
       { label: "Why Omoregie", href: "/why-toyota" },
-      { label: "Fleet & government", href: "/procurement" },
-      { label: "News & media", href: "/media" },
       { label: "Contact us", href: "/contact" },
       { label: "Privacy policy", href: "/legal/privacy" },
     ],

@@ -112,7 +112,7 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* 5 — AFTESALES: dark band, workshop. */}
+      {/* 4 — AFTESALES: dark band, workshop. */}
       <Section tone="night" pad="none" aria-labelledby="service-title">
         <div className="service-band">
           <div className="service-band__media">
@@ -162,7 +162,7 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* 6 — WHY OMOREGIE: three-column proof. */}
+      {/* 5 — WHY OMOREGIE: three-column proof. */}
       <Section tone="paper" pad="lg" aria-labelledby="why-title">
         <div className="shell">
           <SectionHead
@@ -201,44 +201,7 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* 7 — FLEET & GOVERNMENT procurement. */}
-      <Section tone="raised" pad="lg" aria-labelledby="fleet-title">
-        <div className="shell fleet-band">
-          <Reveal className="fleet-band__media">
-            <ImageFrame
-              slot={{
-                src: "/images/dealer/model-hiace-showroom.jpg",
-                alt: "Toyota Hiace van",
-                subject: "Toyota Hiace",
-                aspect: "4 / 3",
-              }}
-              sizes="(min-width: 900px) 46vw, 100vw"
-            />
-          </Reveal>
-          <Reveal className="fleet-band__body" delay={90}>
-            <p className="eyebrow eyebrow--red">Fleet &amp; government</p>
-            <h2 id="fleet-title" className="display-3">
-              A reliable partner for institutional procurement.
-            </h2>
-            <p className="prose-body">
-              We support government agencies, corporate organisations and fleet
-              operators with brand-new Toyota vehicles, procurement
-              specification, delivery coordination and ongoing maintenance.
-            </p>
-            <div className="fleet-band__actions">
-              <Link href="/procurement" className="btn btn--ink">
-                Corporate &amp; fleet supply
-                <ArrowRight width={16} height={16} />
-              </Link>
-              <Link href="/contact" className="btn btn--outline">
-                Talk to our team
-              </Link>
-            </div>
-          </Reveal>
-        </div>
-      </Section>
-
-      {/* 8 — LOCATIONS. */}
+      {/* 6 — LOCATIONS. */}
       <Section tone="paper" pad="lg" aria-labelledby="locations-title">
         <div className="shell">
           <SectionHead
@@ -293,7 +256,7 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* 9 — CONTACT CTA. */}
+      {/* 7 — CONTACT CTA. */}
       <Section tone="sunk" pad="md">
         <div className="shell closing">
           <Reveal>

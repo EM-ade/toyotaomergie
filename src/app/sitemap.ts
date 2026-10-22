@@ -27,8 +27,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       { url: `${siteUrl}/why-toyota`, changeFrequency: "yearly", priority: 0.6 },
       { url: `${siteUrl}/warranty`, changeFrequency: "yearly", priority: 0.6 },
       { url: `${siteUrl}/awards`, changeFrequency: "yearly", priority: 0.5 },
-      { url: `${siteUrl}/csr`, changeFrequency: "yearly", priority: 0.5 },
-      { url: `${siteUrl}/media`, changeFrequency: "weekly", priority: 0.5 },
       { url: `${siteUrl}/contact`, changeFrequency: "yearly", priority: 0.6 },
       { url: `${siteUrl}/service/request`, changeFrequency: "yearly", priority: 0.5 },
       { url: `${siteUrl}/vehicles/compare`, changeFrequency: "monthly", priority: 0.4 },
