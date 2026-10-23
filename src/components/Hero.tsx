@@ -7,10 +7,11 @@ import type { ImageSlot } from "@/content/types";
 import { ArrowRight, Phone, Shield } from "./icons";
 import { telHref, waHref } from "@/content/site";
 
-const ROTATE_MS = 6000;
+const ROTATE_MS = 4500;
 /** Tile grids chosen so tiles land close to square per breakpoint. */
 const GRID = { desktop: { cols: 8, rows: 4 }, mobile: { cols: 4, rows: 5 } };
 const TILE_STEP_MS = 58; // cascade step from the random origin (45 + 30%)
+const TILE_FADE_MS = 365; // per-tile fade, from 280ms slowed by 30%
 
 /** djb2 string hash — stable across server and client. */
 function hashSeed(str: string): number {
@@ -71,6 +72,8 @@ export function Hero({
   const [active, setActive] = useState(0);
   const [rotate, setRotate] = useState(false);
   const [compact, setCompact] = useState(false);
+  const [settled, setSettled] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
 
   // Load reveal for the text column; the tiles choreograph themselves in CSS.
   useEffect(() => {
@@ -109,6 +112,23 @@ export function Hero({
   const { cols, rows } = compact ? GRID.mobile : GRID.desktop;
   const slide = images[active] ?? images[0];
   const hasAsset = Boolean(slide?.src);
+  // Full cascade length; after it the tiles swap to a single image so the
+  // resting hero has no per-tile composited seams.
+  const cascadeMs = (rows + cols - 2) * TILE_STEP_MS + TILE_FADE_MS;
+
+  // Settle (tiles -> one image). Under reduced motion the photo is simply
+  // present, so settle immediately.
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setReduceMotion(reduce);
+    if (reduce) {
+      setSettled(true);
+      return;
+    }
+    setSettled(false);
+    const t = setTimeout(() => setSettled(true), cascadeMs + 80);
+    return () => clearTimeout(t);
+  }, [active, cascadeMs]);
 
   // Random origin tile for this car's cascade. Seeded by the car name so the
   // server and client compute the same values (hydration-safe), while each
@@ -134,7 +154,14 @@ export function Hero({
   return (
     <section className="hero" data-revealed={revealed ? "true" : "false"}>
       <div className="hero__media" aria-hidden="true">
-        {hasAsset ? (
+        {hasAsset && (settled || reduceMotion) ? (
+          // Resting state: a single image. One element paints the whole
+          // photo, so the per-tile composited seams cannot show.
+          <div key={`settled-${active}-${slide.subject}`} className="hero__settled">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={slide.src} alt="" decoding="async" />
+          </div>
+        ) : hasAsset ? (
           <div
             key={`${active}-${slide.subject}`}
             className="hero__tiles"

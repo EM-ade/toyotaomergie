@@ -5023,6 +5023,23 @@
     object-position: 62% center;
   }
 
+  /* Resting state after the cascade: one img paints the whole photo, so no
+     tile seams can show. Same crop as the tile grid (object-position must
+     match the tile img below). */
+  .hero__settled {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .hero__settled img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 62% center;
+    max-width: none;
+    display: block;
+  }
+
   /* Rotation ticks: small dashes over the photo, clickable. */
   .hero__ticks {
     position: absolute;
@@ -5061,7 +5078,8 @@
   }
 
   @media (max-width: 720px) {
-    .hero__tile > img {
+    .hero__tile > img,
+    .hero__settled img {
       object-position: 60% 35%;
     }
     .hero__ticks {
