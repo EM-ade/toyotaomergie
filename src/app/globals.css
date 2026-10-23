@@ -4956,7 +4956,7 @@
 @layer components {
   /* -- Hero: checkerboard tile reveal ----------------------------------
      The photo is cut into a grid of tiles. On load and on every car
-     change, the tiles appear in a diagonal cascade, each tile a window
+     change, the tiles ripple outward from a random origin tile, each tile a window
      into its own piece of the image, until the photo is assembled.
      One system is both the load reveal and the car-to-car transition.  */
 
@@ -4993,7 +4993,7 @@
     overflow: hidden;
     opacity: 0;
     transform: scale(0.8);
-    animation: tileIn 280ms var(--ease-reveal) forwards;
+    animation: tileIn 365ms var(--ease-reveal) forwards;
     animation-delay: var(--tile-delay, 0ms);
   }
   /* Each tile is a window: an inner copy of the photo is drawn at the full
@@ -5073,7 +5073,7 @@
     }
   }
 
-  /* Reduced motion: the photo is simply present — no cascade. */
+  /* Reduced motion: the photo is simply present ï¿½ no cascade. */
   @media (prefers-reduced-motion: reduce) {
     .hero__tile {
       animation: none;

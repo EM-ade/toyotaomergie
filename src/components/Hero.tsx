@@ -10,15 +10,40 @@ import { telHref, waHref } from "@/content/site";
 const ROTATE_MS = 6000;
 /** Tile grids chosen so tiles land close to square per breakpoint. */
 const GRID = { desktop: { cols: 8, rows: 4 }, mobile: { cols: 4, rows: 5 } };
-const TILE_STEP_MS = 45; // diagonal cascade step
+const TILE_STEP_MS = 58; // cascade step from the random origin (45 + 30%)
+
+/** djb2 string hash — stable across server and client. */
+function hashSeed(str: string): number {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) + h + str.charCodeAt(i)) >>> 0;
+  }
+  return h;
+}
+
+/** Mulberry32 — tiny deterministic PRNG. */
+function mulberry32(seed: number): () => number {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
 /**
  * Showroom hero with the checkerboard reveal.
  *
  * The photo is cut into a grid of tiles; on load, and every time the hero
- * advances to another car, the tiles cascade in diagonally, each framing
- * its own piece of the image, until the photo is assembled. One system is
- * both the load reveal and the car-to-car transition.
+ * advances to another car, the tiles cascade outward from a starting tile,
+ * each framing its own piece of the image, until the photo is assembled.
+ * One system is both the load reveal and the car-to-car transition.
+ *
+ * The starting tile is randomised per car — but via a seeded PRNG rather
+ * than Math.random(), because the tiles render on the server: unseeded
+ * randomness would differ between server and client and break hydration.
  *
  * The cascade is ambient-gated: rotation advances only while the page is
  * idle, pauses in hidden tabs, and never runs under reduced motion (where
@@ -84,11 +109,25 @@ export function Hero({
   const { cols, rows } = compact ? GRID.mobile : GRID.desktop;
   const slide = images[active] ?? images[0];
   const hasAsset = Boolean(slide?.src);
-  // Diagonal cascade: corner to corner, so the grid fills in sequence.
+
+  // Random origin tile for this car's cascade. Seeded by the car name so the
+  // server and client compute the same values (hydration-safe), while each
+  // car starts somewhere different.
+  const origin = (() => {
+    const rand = mulberry32(hashSeed(`${slide?.subject ?? "hero"}-${active}`));
+    return {
+      row: Math.floor(rand() * rows),
+      col: Math.floor(rand() * cols),
+    };
+  })();
+
+  // Cascade order: Manhattan distance from the origin, so tiles ripple
+  // outward in diamond rings until the grid is filled.
   const tiles: { col: number; row: number; delay: number }[] = [];
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-      tiles.push({ col, row, delay: (row + col) * TILE_STEP_MS });
+      const dist = Math.abs(row - origin.row) + Math.abs(col - origin.col);
+      tiles.push({ col, row, delay: dist * TILE_STEP_MS });
     }
   }
 
