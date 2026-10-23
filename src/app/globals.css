@@ -4954,13 +4954,13 @@
 }
 
 @layer components {
-  /* -- Hero motion: reveal wipe + quiet model rotation -----------------
-     The whole media block wipes in on load (scale 1.06 -> 1, fade), the
-     treatment kept from the earlier build. The studio renders then
-     crossfade slowly, one car at a time, only while the page is idle.
-     This replaces the "Studio Slice" signature (reverted by decision).  */
+  /* -- Hero: checkerboard tile reveal ----------------------------------
+     The photo is cut into a grid of tiles. On load and on every car
+     change, the tiles appear in a diagonal cascade, each tile a window
+     into its own piece of the image, until the photo is assembled.
+     One system is both the load reveal and the car-to-car transition.  */
 
-  /* Stacking: 0 media (photos) | 2 scrim | 3 ticks | 4 content. */
+  /* Stacking: 0 media (tiles) | 2 scrim | 3 ticks | 4 content. */
   .hero {
     isolation: isolate;
   }
@@ -4969,55 +4969,61 @@
     inset: 0;
     z-index: 0;
   }
-  .hero__media .image-frame {
+  .hero__scrim {
     position: absolute;
     inset: 0;
-    height: 100%;
-    width: 100%;
+    z-index: 2;
   }
-  .hero__media .image-frame img,
-  .hero__media .image-frame .plate {
-    width: 100%;
-    height: 100%;
+  .hero__content {
+    position: relative;
+    z-index: 4;
+  }
+
+  /* Tile grid. --cols/--rows are set inline by the component, chosen so
+     tiles land close to square at each breakpoint. */
+  .hero__tiles {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 8), 1fr);
+    grid-template-rows: repeat(var(--rows, 4), 1fr);
+  }
+  .hero__tile {
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(0.8);
+    animation: tileIn 280ms var(--ease-reveal) forwards;
+    animation-delay: var(--tile-delay, 0ms);
+  }
+  /* Each tile is a window: an inner copy of the photo is drawn at the full
+     grid size and shifted so the tile frames exactly its own piece. The
+     percentages are relative to the tile, so cols x tile = grid width. */
+  .hero__tile > img {
+    position: absolute;
+    width: calc(var(--cols, 8) * 100%);
+    height: calc(var(--rows, 4) * 100%);
+    left: calc(var(--tile-col, 0) * -100%);
+    top: calc(var(--tile-row, 0) * -100%);
+    max-width: none;
     object-fit: cover;
-  }
-  .hero__img {
     object-position: 62% center;
   }
-  .hero__scrim { z-index: 2; position: absolute; inset: 0; }
-  .hero__content { z-index: 4; position: relative; }
-
-  /* Crossfade slides. The active slide also settles from a slight zoom,
-     echoing the load wipe each time a new car is presented. */
-  /* The reveal *is* the transition. Every incoming car — including the very
-     first on load — plays the same wipe: fade from 0 + settle from a 1.06
-     zoom, over 1.54s (the original 1.1s slowed by 40%). The outgoing car
-     fades back over 1.26s (0.9s + 40%), so the two overlap gently. */
-  .hero__slide {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity 1260ms var(--ease-ui);
-    pointer-events: none;
-  }
-  .hero__slide.is-active {
-    opacity: 1;
-    animation: heroReveal 1540ms var(--ease-reveal) forwards;
-    will-change: transform, opacity;
-  }
-  @keyframes heroReveal {
+  @keyframes tileIn {
     from {
       opacity: 0;
-      transform: scale(1.06);
+      transform: scale(0.8);
     }
     to {
       opacity: 1;
       transform: scale(1);
     }
   }
+  .hero__img {
+    object-position: 62% center;
+  }
 
-  /* Rotation ticks: small dashes, clickable, bottom right over the photo.
-     Low visual weight; they exist so visitors know more cars are there. */
+  /* Rotation ticks: small dashes over the photo, clickable. */
   .hero__ticks {
     position: absolute;
     right: max(1.5rem, env(safe-area-inset-right));
@@ -5053,7 +5059,11 @@
     outline: 2px solid #fff;
     outline-offset: 3px;
   }
+
   @media (max-width: 720px) {
+    .hero__tile > img {
+      object-position: 60% 35%;
+    }
     .hero__ticks {
       right: 1rem;
       bottom: 0.75rem;
@@ -5063,17 +5073,12 @@
     }
   }
 
-  /* Reduced motion: no wipe, no zoom-settle, no crossfade movement. */
+  /* Reduced motion: the photo is simply present � no cascade. */
   @media (prefers-reduced-motion: reduce) {
-    .hero__media {
-      transition: none;
-    }
-    .hero__slide {
-      transition: none;
+    .hero__tile {
       animation: none;
-    }
-    .hero__slide:not(.is-active) {
-      display: none;
+      opacity: 1;
+      transform: none;
     }
   }
 }

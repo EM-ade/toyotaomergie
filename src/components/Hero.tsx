@@ -8,15 +8,21 @@ import { ArrowRight, Phone, Shield } from "./icons";
 import { telHref, waHref } from "@/content/site";
 
 const ROTATE_MS = 6000;
+/** Tile grids chosen so tiles land close to square per breakpoint. */
+const GRID = { desktop: { cols: 8, rows: 4 }, mobile: { cols: 4, rows: 5 } };
+const TILE_STEP_MS = 45; // diagonal cascade step
 
 /**
- * Showroom hero.
+ * Showroom hero with the checkerboard reveal.
  *
- * Load: the whole media block wipes in (scale 1.06 -> 1 with a fade) — the
- * reveal kept from the earlier build. Afterwards the studio renders crossfade
- * slowly, one car at a time. The rotation is ambient: it advances only while
- * the page is idle (html[data-idel="true"], set by the shared idle controller)
- * and never with reduced motion. Selecting a tick shows that car directly.
+ * The photo is cut into a grid of tiles; on load, and every time the hero
+ * advances to another car, the tiles cascade in diagonally, each framing
+ * its own piece of the image, until the photo is assembled. One system is
+ * both the load reveal and the car-to-car transition.
+ *
+ * The cascade is ambient-gated: rotation advances only while the page is
+ * idle, pauses in hidden tabs, and never runs under reduced motion (where
+ * the photo is simply present). Ticks under the photo jump to a car.
  */
 export function Hero({
   images,
@@ -27,7 +33,7 @@ export function Hero({
   secondary,
   stats,
 }: {
-  /** The cars to present; the first is shown on load and for reduced motion. */
+  /** The cars to present; the first is shown on load. */
   images: ImageSlot[];
   badge: string;
   titleLines: string[];
@@ -39,62 +45,93 @@ export function Hero({
   const [revealed, setRevealed] = useState(false);
   const [active, setActive] = useState(0);
   const [rotate, setRotate] = useState(false);
+  const [compact, setCompact] = useState(false);
 
-  const count = images.length;
-
-  // Load reveal — two frames so the initial state paints first.
+  // Load reveal for the text column; the tiles choreograph themselves in CSS.
   useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
-      setRevealed(true);
-      return;
-    }
     const raf = requestAnimationFrame(() => setRevealed(true));
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Rotation: allowed only without reduced motion and with 2+ cars. Ticks
-  // advance under the same gate; the interval resets on every change so a
-  // manual selection always gets its full six seconds.
+  // Track the breakpoint so tiles stay close to square.
   useEffect(() => {
+    const mq = window.matchMedia("(max-width: 720px)");
+    const apply = () => setCompact(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  // Rotation gate: no reduced motion, at least two cars.
+  useEffect(() => {
+    if (images.length < 2) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || count < 2) return;
+    if (reduce) return;
     setRotate(true);
-  }, [count]);
+  }, [images.length]);
 
   useEffect(() => {
-    if (!rotate || count < 2) return;
+    if (!rotate || images.length < 2) return;
     const id = setInterval(() => {
       if (document.hidden) return;
       // Ambient only: hold the current car while the visitor is interacting.
       if (document.documentElement.dataset.idle === "false") return;
-      setActive((a) => (a + 1) % count);
+      setActive((a) => (a + 1) % images.length);
     }, ROTATE_MS);
     return () => clearInterval(id);
-  }, [rotate, count, active]);
+  }, [rotate, images.length, active]);
+
+  const { cols, rows } = compact ? GRID.mobile : GRID.desktop;
+  const slide = images[active] ?? images[0];
+  const hasAsset = Boolean(slide?.src);
+  // Diagonal cascade: corner to corner, so the grid fills in sequence.
+  const tiles: { col: number; row: number; delay: number }[] = [];
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      tiles.push({ col, row, delay: (row + col) * TILE_STEP_MS });
+    }
+  }
 
   return (
     <section className="hero" data-revealed={revealed ? "true" : "false"}>
-      <div className="hero__media">
-        {images.map((img, i) => (
+      <div className="hero__media" aria-hidden="true">
+        {hasAsset ? (
           <div
-            key={`${img.subject}-${i}`}
-            className={i === active ? "hero__slide is-active" : "hero__slide"}
-            aria-hidden={i !== active}
+            key={`${active}-${slide.subject}`}
+            className="hero__tiles"
+            style={{ "--cols": cols, "--rows": rows } as React.CSSProperties}
           >
-            <ImageFrame
-              slot={img}
-              priority={i === 0}
-              showCaption={false}
-              sizes="(min-width: 900px) 62vw, 100vw"
-              className="hero__img"
-            />
+            {tiles.map((t) => (
+              <span
+                key={`${t.row}-${t.col}`}
+                className="hero__tile"
+                style={
+                  {
+                    "--tile-col": t.col,
+                    "--tile-row": t.row,
+                    "--tile-delay": `${t.delay}ms`,
+                  } as React.CSSProperties
+                }
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={slide.src} alt="" decoding="async" />
+              </span>
+            ))}
           </div>
-        ))}
+        ) : (
+          <ImageFrame
+            slot={slide}
+            priority
+            showCaption={false}
+            sizes="(min-width: 900px) 62vw, 100vw"
+            className="hero__img"
+          />
+        )}
+        <span className="visually-hidden">{slide.subject}</span>
 
         <div className="hero__scrim" aria-hidden="true" />
 
-        {rotate && count > 1 && (
+        {rotate && images.length > 1 && (
           <ul className="hero__ticks" aria-label="Featured vehicles">
             {images.map((img, i) => (
               <li key={`tick-${img.subject}-${i}`}>
