@@ -7,12 +7,19 @@ import type { ImageSlot } from "@/content/types";
 import { ArrowRight, Phone, Shield } from "./icons";
 import { telHref, waHref } from "@/content/site";
 
+const ROTATE_MS = 6000;
+
 /**
- * Showroom hero — product photograph on the right, the offer on the left.
- * Two primary actions (test drive, call) plus a WhatsApp shortcut.
+ * Showroom hero.
+ *
+ * Load: the whole media block wipes in (scale 1.06 -> 1 with a fade) — the
+ * reveal kept from the earlier build. Afterwards the studio renders crossfade
+ * slowly, one car at a time. The rotation is ambient: it advances only while
+ * the page is idle (html[data-idel="true"], set by the shared idle controller)
+ * and never with reduced motion. Selecting a tick shows that car directly.
  */
 export function Hero({
-  image,
+  images,
   badge,
   titleLines,
   lede,
@@ -20,7 +27,8 @@ export function Hero({
   secondary,
   stats,
 }: {
-  image: ImageSlot;
+  /** The cars to present; the first is shown on load and for reduced motion. */
+  images: ImageSlot[];
   badge: string;
   titleLines: string[];
   lede: string;
@@ -29,28 +37,78 @@ export function Hero({
   stats: { value: string; label: string }[];
 }) {
   const [revealed, setRevealed] = useState(false);
+  const [active, setActive] = useState(0);
+  const [rotate, setRotate] = useState(false);
 
+  const count = images.length;
+
+  // Load reveal — two frames so the initial state paints first.
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
       setRevealed(true);
       return;
     }
-    const t = requestAnimationFrame(() => setRevealed(true));
-    return () => cancelAnimationFrame(t);
+    const raf = requestAnimationFrame(() => setRevealed(true));
+    return () => cancelAnimationFrame(raf);
   }, []);
+
+  // Rotation: allowed only without reduced motion and with 2+ cars. Ticks
+  // advance under the same gate; the interval resets on every change so a
+  // manual selection always gets its full six seconds.
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce || count < 2) return;
+    setRotate(true);
+  }, [count]);
+
+  useEffect(() => {
+    if (!rotate || count < 2) return;
+    const id = setInterval(() => {
+      if (document.hidden) return;
+      // Ambient only: hold the current car while the visitor is interacting.
+      if (document.documentElement.dataset.idle === "false") return;
+      setActive((a) => (a + 1) % count);
+    }, ROTATE_MS);
+    return () => clearInterval(id);
+  }, [rotate, count, active]);
 
   return (
     <section className="hero" data-revealed={revealed ? "true" : "false"}>
       <div className="hero__media">
-        <ImageFrame
-          slot={image}
-          priority
-          showCaption={false}
-          sizes="(min-width: 900px) 62vw, 100vw"
-          className="hero__img"
-        />
+        {images.map((img, i) => (
+          <div
+            key={`${img.subject}-${i}`}
+            className={i === active ? "hero__slide is-active" : "hero__slide"}
+            aria-hidden={i !== active}
+          >
+            <ImageFrame
+              slot={img}
+              priority={i === 0}
+              showCaption={false}
+              sizes="(min-width: 900px) 62vw, 100vw"
+              className="hero__img"
+            />
+          </div>
+        ))}
+
         <div className="hero__scrim" aria-hidden="true" />
+
+        {rotate && count > 1 && (
+          <ul className="hero__ticks" aria-label="Featured vehicles">
+            {images.map((img, i) => (
+              <li key={`tick-${img.subject}-${i}`}>
+                <button
+                  type="button"
+                  className={i === active ? "hero__tick is-active" : "hero__tick"}
+                  aria-label={`Show ${img.subject}`}
+                  aria-pressed={i === active}
+                  onClick={() => setActive(i)}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div className="hero__content shell">
@@ -64,9 +122,11 @@ export function Hero({
               <span
                 className="rise"
                 key={line}
-                style={{
-                  "--reveal-delay": `${160 + i * 80}ms`,
-                } as React.CSSProperties}
+                style={
+                  {
+                    "--reveal-delay": `${160 + i * 90}ms`,
+                  } as React.CSSProperties
+                }
               >
                 <span>{line}</span>
               </span>

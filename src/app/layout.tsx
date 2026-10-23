@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { IdleProvider } from "@/components/IdleProvider";
 import { MobileActionBar } from "@/components/MobileActionBar";
 import { siteUrl } from "@/content/site";
 import "./globals.css";
@@ -35,6 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en" id="top" className={inter.variable}>
       <body>
+        <IdleProvider />
         <Header />
         <main id="main">{children}</main>
         <Footer />

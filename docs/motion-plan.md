@@ -362,3 +362,21 @@ html[data-idle="false"] .idle-glow { animation-play-state: paused; }
 - [ ] Verify bands `aria-hidden`, photo `alt` at first paint
 
 **Two things to confirm before build:** (1) should the callout show a price placeholder or a CTA; (2) is the **showroom kiosk** (unattended display) a real target — if so, lengthen I1 and add a kiosk-only looping hero.
+
+---
+
+## 7. Revision log
+
+### v3 — Hero direction change (by client decision)
+
+The **Studio Slice** signature was **reverted**; it was not to the client's taste.
+
+**Current hero treatment** — the reveal wipe kept from the earlier build, now doing double duty:
+
+- **Load:** the first car plays the wipe — fade from 0 + settle from a 1.06 zoom.
+- **Duration:** 1.54s (the original 1.1s slowed by 40%, per client request); outgoing car fades over 1.26s.
+- **Transition:** the same wipe plays *every* time the hero advances to another car (Prado → Hilux → RAV4 → Camry), so load and rotation share one motion language.
+- **Cadence:** 6s per car, ambient-gated — advances only while the page is idle (`html[data-idle="true"]`), pauses on interaction and in hidden tabs, disabled under reduced motion.
+- **Ticks:** four small dashes bottom-right (red when active, white on hover); clickable, keyboard-operable, labelled with the car name.
+
+**Fallback for future hero work:** if a new signature is wanted later, candidates are (a) a scroll-driven angle change (needs multi-angle photography the site doesn't have) or (b) a light-bar sweep limited to the *measure line + label* only, keeping the wipe for the photo. decides with client before building.

@@ -86,11 +86,25 @@
   --radius-pill: 999px;
 
   /* ---- Motion --------------------------------------------------------- */
+  /* One ramp: 90ms to 1100ms in roughly ×1.5 steps. Anything under ~90ms
+     reads as a glitch; anything over ~1100ms fights the hover feel. */
+  --dur-instant: 90ms;
   --dur-ui: 160ms;
   --dur-control: 240ms;
+  --dur-reveal: 420ms;
   --dur-editorial: 520ms;
+  --dur-hero: 1100ms;
+  --dur-idle: 18s;
+
   --ease-reveal: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-ui: cubic-bezier(0.33, 0, 0.2, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  /* Symmetric in-out: correct for a slice travelling across and settling. */
+  --ease-measure: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --stagger-tight: 45ms;
+  --stagger-norm: 70ms;
+  --stagger-loose: 90ms;
 
   /* ---- Elevation ------------------------------------------------------ */
   --shadow-card: 0 1px 2px rgba(16, 18, 21, 0.04),
@@ -105,8 +119,22 @@
 
 @media (prefers-reduced-motion: reduce) {
   :root {
+    --dur-instant: 1ms;
     --dur-ui: 1ms;
     --dur-control: 1ms;
+    --dur-reveal: 1ms;
     --dur-editorial: 1ms;
+    --dur-hero: 1ms;
+    --dur-idle: 1ms;
+  }
+
+  /* Kill every ambient/keyframe animation outright. Transitions already
+     collapse because every duration token above becomes 1ms. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
   }
 }

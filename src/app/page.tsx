@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Hero } from "@/components/Hero";
 import { Section, SectionHead } from "@/components/Section";
 import { Reveal } from "@/components/Reveal";
@@ -21,7 +21,7 @@ import {
   telHref,
   waHref,
 } from "@/content/site";
-import { vehicles, evidencedVehicles } from "@/content/vehicles";
+import { vehicles } from "@/content/vehicles";
 import { dealers } from "@/content/dealers";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -32,7 +32,11 @@ export const metadata = pageMetadata({
   path: "/",
 });
 
-const heroVehicle = vehicles.find((v) => v.slug === "prado") ?? evidencedVehicles[0];
+/** The cars crossfaded in the hero — headliners of the showroom floor. */
+const heroCarousel = ["prado", "hilux", "rav4", "camry"]
+  .map((slug) => vehicles.find((v) => v.slug === slug))
+  .filter(Boolean)
+  .map((v) => (v as (typeof vehicles)[number]).hero);
 
 /**
  * Homepage range: exactly four models, laid out as one wide feature card plus
@@ -57,7 +61,7 @@ export default function HomePage() {
     <>
       {/* 1 — HERO: the showroom offer. */}
       <Hero
-        image={heroVehicle.hero}
+        images={heroCarousel}
         badge={`${brand.descriptor} · Since ${brand.founded}`}
         titleLines={["Authentic Toyota.", "Locally delivered."]}
         lede="Brand-new Toyota vehicles, genuine spare parts and expert aftersales — from an accredited Toyota dealer serving Nigeria for over four decades."
