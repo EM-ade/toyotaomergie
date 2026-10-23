@@ -4680,18 +4680,9 @@
     overflow: hidden;
     isolation: isolate;
   }
-  .vhero__shot {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity var(--dur-control) var(--ease-reveal);
-  }
-  .vhero__shot.is-active { opacity: 1; position: relative; }
-  .vhero__shot .image-frame { height: 100%; }
-  .vhero__shot .image-frame img {
-    object-fit: cover;
-    object-position: 62% 55%;
-  }
+  /* Checkerboard cascade fills the stage (see TileCascade); the stage
+     itself carries the responsive aspect ratio. */
+  .vhero__stage { aspect-ratio: 16 / 9; }
 
   .vhero__overlay {
     position: absolute;
@@ -4834,15 +4825,15 @@
   }
 
   /* Stage height scales with the viewport, capped so it reads as a stage. */
-  .vhero__shot.is-active { aspect-ratio: 16 / 9; }
+
   @media (min-width: 1100px) {
-    .vhero__shot.is-active { aspect-ratio: 21 / 9; }
+    .vhero__stage { aspect-ratio: 21 / 9; }
     .vhero__title { font-size: clamp(3rem, 1.6rem + 4vw, 5rem); }
   }
 
   /* Mobile: stack actions, shrink the stage, move thumbs below. */
   @media (max-width: 720px) {
-    .vhero__shot.is-active { aspect-ratio: 4 / 3; }
+    .vhero__stage { aspect-ratio: 4 / 3; }
     .vhero__overlayinner {
       flex-direction: column;
       align-items: flex-start;
@@ -5102,23 +5093,7 @@
 }
 @layer components {
   /* -- Header: nav underline ------------------------------------------- */
-  .nav__link::after {
-    content: "";
-    position: absolute;
-    left: 0.75rem;
-    right: 0.75rem;
-    bottom: -0.45rem;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--red);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform var(--dur-ui) var(--ease-ui);
-  }
-  .nav__link:hover::after,
-  .nav__link[data-active="true"]::after {
-    transform: scaleX(1);
-  }
+
 
   /* -- Header: mega menu item stagger ----------------------------------
      Panels mount on open, so the cascade replays every time. */
@@ -5339,6 +5314,10 @@
   }
   html[data-idle="false"] .hero__settled img {
     animation-play-state: paused;
+  }
+  /* Linking contexts without drift (vehicle detail stage). */
+  .kb-off img {
+    animation: none !important;
   }
   @keyframes kenBurns {
     from { transform: scale(1) translateY(0); }

@@ -2,53 +2,20 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ImageFrame } from "./ImageFrame";
+import { TileCascade } from "./TileCascade";
 import type { ImageSlot } from "@/content/types";
 import { ArrowRight, ChevronDown, Phone, Shield } from "./icons";
 import { telHref, waHref } from "@/content/site";
 
 const ROTATE_MS = 4500;
-/** Tile grids chosen so tiles land close to square per breakpoint. */
-const GRID = { desktop: { cols: 8, rows: 4 }, mobile: { cols: 4, rows: 5 } };
-const TILE_STEP_MS = 58; // cascade step from the random origin (45 + 30%)
-const TILE_FADE_MS = 365; // per-tile fade, from 280ms slowed by 30%
-
-/** djb2 string hash — stable across server and client. */
-function hashSeed(str: string): number {
-  let h = 5381;
-  for (let i = 0; i < str.length; i++) {
-    h = ((h << 5) + h + str.charCodeAt(i)) >>> 0;
-  }
-  return h;
-}
-
-/** Mulberry32 — tiny deterministic PRNG. */
-function mulberry32(seed: number): () => number {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
 /**
- * Showroom hero with the checkerboard reveal.
+ * Showroom hero.
  *
- * The photo is cut into a grid of tiles; on load, and every time the hero
- * advances to another car, the tiles cascade outward from a starting tile,
- * each framing its own piece of the image, until the photo is assembled.
- * One system is both the load reveal and the car-to-car transition.
- *
- * The starting tile is randomised per car — but via a seeded PRNG rather
- * than Math.random(), because the tiles render on the server: unseeded
- * randomness would differ between server and client and break hydration.
- *
- * The cascade is ambient-gated: rotation advances only while the page is
- * idle, pauses in hidden tabs, and never runs under reduced motion (where
- * the photo is simply present). Ticks under the photo jump to a car.
+ * The featured cars crossfade via the checkerboard cascade (shared
+ * `TileCascade`), advancing automatically while the page is idle, with
+ * clickable ticks. The media block wipes in on load; the copy column stages
+ * in after the headline lines.
  */
 export function Hero({
   images,
@@ -70,134 +37,43 @@ export function Hero({
 }) {
   const [revealed, setRevealed] = useState(false);
   const [active, setActive] = useState(0);
-  const [rotate, setRotate] = useState(false);
-  const [compact, setCompact] = useState(false);
-  const [settled, setSettled] = useState(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
 
-  // Load reveal for the text column; the tiles choreograph themselves in CSS.
+  // Load reveal for the copy column.
   useEffect(() => {
     const raf = requestAnimationFrame(() => setRevealed(true));
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Track the breakpoint so tiles stay close to square.
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 720px)");
-    const apply = () => setCompact(mq.matches);
-    apply();
-    mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
-  }, []);
-
-  // Rotation gate: no reduced motion, at least two cars.
+  // Rotation: ambient-gated (only while the page is idle, never in hidden
+  // tabs). Reduced motion is handled inside TileCascade, which simply shows
+  // the photo - index changes stay invisible, so no gate needed here.
   useEffect(() => {
     if (images.length < 2) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
-    setRotate(true);
-  }, [images.length]);
-
-  useEffect(() => {
-    if (!rotate || images.length < 2) return;
     const id = setInterval(() => {
       if (document.hidden) return;
-      // Ambient only: hold the current car while the visitor is interacting.
       if (document.documentElement.dataset.idle === "false") return;
       setActive((a) => (a + 1) % images.length);
     }, ROTATE_MS);
     return () => clearInterval(id);
-  }, [rotate, images.length, active]);
-
-  const { cols, rows } = compact ? GRID.mobile : GRID.desktop;
-  const slide = images[active] ?? images[0];
-  const hasAsset = Boolean(slide?.src);
-  // Full cascade length; after it the tiles swap to a single image so the
-  // resting hero has no per-tile composited seams.
-  const cascadeMs = (rows + cols - 2) * TILE_STEP_MS + TILE_FADE_MS;
-
-  // Settle (tiles -> one image). Under reduced motion the photo is simply
-  // present, so settle immediately.
-  useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setReduceMotion(reduce);
-    if (reduce) {
-      setSettled(true);
-      return;
-    }
-    setSettled(false);
-    const t = setTimeout(() => setSettled(true), cascadeMs + 80);
-    return () => clearTimeout(t);
-  }, [active, cascadeMs]);
-
-  // Random origin tile for this car's cascade. Seeded by the car name so the
-  // server and client compute the same values (hydration-safe), while each
-  // car starts somewhere different.
-  const origin = (() => {
-    const rand = mulberry32(hashSeed(`${slide?.subject ?? "hero"}-${active}`));
-    return {
-      row: Math.floor(rand() * rows),
-      col: Math.floor(rand() * cols),
-    };
-  })();
-
-  // Cascade order: Manhattan distance from the origin, so tiles ripple
-  // outward in diamond rings until the grid is filled.
-  const tiles: { col: number; row: number; delay: number }[] = [];
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      const dist = Math.abs(row - origin.row) + Math.abs(col - origin.col);
-      tiles.push({ col, row, delay: dist * TILE_STEP_MS });
-    }
-  }
+  }, [images.length, active]);
 
   return (
     <section className="hero" data-revealed={revealed ? "true" : "false"}>
       <div className="hero__media" aria-hidden="true">
-        {hasAsset && (settled || reduceMotion) ? (
-          // Resting state: a single image. One element paints the whole
-          // photo, so the per-tile composited seams cannot show.
-          <div key={`settled-${active}-${slide.subject}`} className="hero__settled">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={slide.src} alt="" decoding="async" />
-          </div>
-        ) : hasAsset ? (
-          <div
-            key={`${active}-${slide.subject}`}
-            className="hero__tiles"
-            style={{ "--cols": cols, "--rows": rows } as React.CSSProperties}
-          >
-            {tiles.map((t) => (
-              <span
-                key={`${t.row}-${t.col}`}
-                className="hero__tile"
-                style={
-                  {
-                    "--tile-col": t.col,
-                    "--tile-row": t.row,
-                    "--tile-delay": `${t.delay}ms`,
-                  } as React.CSSProperties
-                }
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={slide.src} alt="" decoding="async" />
-              </span>
-            ))}
-          </div>
-        ) : (
-          <ImageFrame
-            slot={slide}
-            priority
-            showCaption={false}
+        {images[active] && (
+          <TileCascade
+            key={`${active}-${images[active].subject ?? active}`}
+            slot={images[active]}
+            seed={`${active}`}
+            idleDrift
             sizes="(min-width: 900px) 62vw, 100vw"
             className="hero__img"
           />
         )}
-        <span className="visually-hidden">{slide.subject}</span>
 
         <div className="hero__scrim" aria-hidden="true" />
 
-        {rotate && images.length > 1 && (
+        {images.length > 1 && (
           <ul className="hero__ticks" aria-label="Featured vehicles">
             {images.map((img, i) => (
               <li key={`tick-${img.subject}-${i}`}>

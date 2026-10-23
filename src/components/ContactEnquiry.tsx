@@ -54,6 +54,14 @@ export function ContactEnquiry() {
   const params = useSearchParams();
   const subject = params.get("subject");
   const dealer = params.get("dealer");
+  // Detail pages link here with ?vehicle=<slug>; humanise the slug.
+  const vehicle = params.get("vehicle");
+  const vehicleSubject = vehicle
+    ? vehicle
+        .split("-")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ")
+    : null;
 
   return (
     <EnquiryForm
@@ -62,9 +70,11 @@ export function ContactEnquiry() {
       subject={
         dealer
           ? `Enquiry to ${dealer}`
-          : subject
-            ? `Enquiry about the ${subject}`
-            : undefined
+          : vehicleSubject
+            ? `Enquiry about the ${vehicleSubject}`
+            : subject
+              ? `Enquiry about the ${subject}`
+              : undefined
       }
       governanceNote="Prefer to talk? Call or message us on WhatsApp and we'll respond straight away."
     />

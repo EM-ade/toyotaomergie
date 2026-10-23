@@ -96,7 +96,7 @@ export default function PartsPage() {
               component for your build.
             </p>
           </div>
-          <TextLink href="/faq#parts" icon={<ArrowRight width={14} height={14} />}>
+          <TextLink href="/faq#spare-parts" icon={<ArrowRight width={14} height={14} />}>
             Parts FAQ
           </TextLink>
         </div>

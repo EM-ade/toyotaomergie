@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ImageFrame } from "./ImageFrame";
+import { TileCascade } from "./TileCascade";
 import type { ImageSlot } from "@/content/types";
 import { cx } from "@/lib/cx";
 import { ArrowRight, WhatsApp } from "./icons";
+
+const GALLERY_ROTATE_MS = 4500;
 
 /**
  * Vehicle product hero.
@@ -15,6 +17,11 @@ import { ArrowRight, WhatsApp } from "./icons";
  * leads, occupying the full width, with the model name overlaid bottom-left and
  * the specification rail beneath. This is the one page where the product should
  * own the screen rather than share it with a text column.
+ *
+ * Gallery images use the same checkerboard cascade as the homepage hero, and
+ * advance automatically (ambient-gated: only while the page is idle, paused
+ * in hidden tabs, off under reduced motion). A thumbnail click shows that
+ * image and restarts the timer.
  */
 export function VehicleHero({
   name,
@@ -38,7 +45,27 @@ export function VehicleHero({
   testDriveHref: string;
 }) {
   const [active, setActive] = useState(0);
+  const [rotate, setRotate] = useState(false);
   const gallery = images.length ? images : [];
+
+  // Auto-advance gate: no reduced motion, at least two images.
+  useEffect(() => {
+    if (gallery.length < 2) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    setRotate(true);
+  }, [gallery.length]);
+
+  useEffect(() => {
+    if (!rotate || gallery.length < 2) return;
+    const id = setInterval(() => {
+      if (document.hidden) return;
+      // Ambient only: hold the current image while the visitor interacts.
+      if (document.documentElement.dataset.idle === "false") return;
+      setActive((a) => (a + 1) % gallery.length);
+    }, GALLERY_ROTATE_MS);
+    return () => clearInterval(id);
+  }, [rotate, gallery.length, active]);
 
   return (
     <section className="vhero" aria-labelledby="vhero-title">
@@ -58,20 +85,12 @@ export function VehicleHero({
 
       {/* The car owns the screen. */}
       <div className="vhero__stage">
-        {gallery.map((img, i) => (
-          <div
-            key={img.subject}
-            className={cx("vhero__shot", i === active && "is-active")}
-            aria-hidden={i !== active}
-          >
-            <ImageFrame
-              slot={img}
-              priority={i === 0}
-              showCaption={false}
-              sizes="(min-width: 1280px) 78vw, 100vw"
-            />
-          </div>
-        ))}
+        <TileCascade
+          key={`${active}-${gallery[active]?.subject ?? name}`}
+          slot={gallery[active]}
+          seed={`${name}-${active}`}
+          sizes="(min-width: 1280px) 78vw, 100vw"
+        />
 
         <div className="vhero__overlay">
           <div className="shell vhero__overlayinner">
@@ -98,8 +117,6 @@ export function VehicleHero({
             </div>
           </div>
         </div>
-
-
       </div>
 
       {/* Specification rail — sit beneath the car, not beside the copy. */}
