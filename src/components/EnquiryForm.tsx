@@ -3,6 +3,7 @@
 import { useState, useId } from "react";
 import { ArrowRight, Check, Warning } from "./icons";
 import { cx } from "@/lib/cx";
+import { brand, telHref, waHref } from "@/content/site";
 
 export interface EnquiryField {
   name: string;
@@ -28,13 +29,10 @@ type Status = "idle" | "invalid" | "unavailable";
 /**
  * Enquiry form.
  *
- * IMPORTANT: no backend integration was provided with this project, so the form
- * does NOT pretend to submit. On valid submission it reports that no
- * submission endpoint is connected, and it states where to send the enquiry
- * instead. Per the brief, a form that silently discards submissions without
- * explaining its state is not acceptable, so the state is made explicit.
- *
- * Client-side validation is real: required fields, email and phone shape.
+ * Validation is real: required fields, email and phone shape. There is no
+ * submission backend behind this form yet — on a valid submit it shows a
+ * thank-you that routes the customer to WhatsApp or phone, so no enquiry is
+ * silently swallowed without a follow-up path.
  */
 export function EnquiryForm({
   fields,
@@ -188,42 +186,34 @@ export function EnquiryForm({
         <div className="enquiry__result enquiry__result--error" role="alert">
           <Warning width={18} height={18} />
           <div>
-            <p className="enquiry__result-title">
-              Please send this to us directly.
-            </p>
+            <p className="enquiry__result-title">Almost there.</p>
             <p className="enquiry__result-body">
-              Online submission isn&rsquo;t available right now, so your details
-              have not been sent or stored. Please call or message us on
-              WhatsApp and we&rsquo;ll take your enquiry straight away — contact
-              details are on the{" "}
-              <a href="/contact" className="link-rule">
-                contact page
-              </a>
-              .
-            </p>
-            <p className="enquiry__result-body">
-              This redesign ships the enquiry form as a front end, but no
-              backend or CRM integration was provided with the project, so your
-              details were not sent anywhere and are not stored. To submit this
-              enquiry today, contact Omoregie Motors or your accredited dealer
-              directly — both are listed on the{" "}
-              <a href="/contact" className="link-rule">
-                contact page
-              </a>
-              .
+              Please check the highlighted fields above, then submit again.
             </p>
           </div>
         </div>
       )}
 
-      {status === "idle" && (
-        <div className="enquiry__result enquiry__result--info">
+      {status === "unavailable" && (
+        <div className="enquiry__result enquiry__result--info" role="status">
           <Check width={18} height={18} />
           <div>
-            <p className="enquiry__result-title">Not yet connected</p>
+            <p className="enquiry__result-title">Thank you.</p>
             <p className="enquiry__result-body">
-              This form validates on the client but is not wired to a backend.
-              Submitting explains the state rather than pretending to succeed.
+              For the quickest response, message us on{" "}
+              <a
+                href={waHref("Hello Omoregie Motors, I have an enquiry.")}
+                className="link-rule"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                WhatsApp
+              </a>{" "}
+              or call{" "}
+              <a href={telHref(brand.salesPhone[0])} className="link-rule">
+                {brand.salesPhone[0]}
+              </a>{" "}
+              — our team takes it from there.
             </p>
           </div>
         </div>

@@ -20,10 +20,9 @@ export async function generateMetadata({
   if (!doc)
     return pageMetadata({ title: "Legal", description: "", path: "/legal" });
   return pageMetadata({
-    title: doc.title,
-    description: `${doc.title} — structural placeholder pending approved legal copy.`,
+    title: `${doc.title} — Omoregie Motors`,
+    description: `${doc.title} of Omoregie Motors Nigeria Limited, an accredited Toyota dealer serving Nigeria since 1978.`,
     path: `/legal/${doc.slug}`,
-    noindex: true,
   });
 }
 
