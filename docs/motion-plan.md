@@ -380,3 +380,12 @@ The **Studio Slice** signature was **reverted**; it was not to the client's tast
 - **Ticks:** four small dashes bottom-right (red when active, white on hover); clickable, keyboard-operable, labelled with the car name.
 
 **Fallback for future hero work:** if a new signature is wanted later, candidates are (a) a scroll-driven angle change (needs multi-angle photography the site doesn't have) or (b) a light-bar sweep limited to the *measure line + label* only, keeping the wipe for the photo. decides with client before building.
+### v4 — Checkerboard tile reveal (current)
+
+Replaced the wipe with a **checkerboard tile reveal**, per client description:
+
+- The hero photo is cut into a grid of tiles — 8×4 desktop, 4×5 mobile (tiles ~square).
+- On load and on every car change, tiles appear in a **diagonal cascade** (delay = (row+col) × 45ms), each tile fading/scaling in (280ms) and framing exactly its own piece of the image (an inner copy of the photo, sized to the full grid and shifted per tile).
+- One system is both the **load reveal** and the **car-to-car transition**: the incoming car's tiles assemble over the empty hero box — no crossfade.
+- Cascade completes in ~0.7s; rotation cadence stays 6s, ambient-gated (idle/hidden-tab/reduced-motion rules unchanged).
+- Ticks (one per car, red when active) remain clickable/keyboard-operable.
