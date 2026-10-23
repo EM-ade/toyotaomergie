@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ImageFrame } from "./ImageFrame";
 import type { ImageSlot } from "@/content/types";
-import { ArrowRight, Phone, Shield } from "./icons";
+import { ArrowRight, ChevronDown, Phone, Shield } from "./icons";
 import { telHref, waHref } from "@/content/site";
 
 const ROTATE_MS = 4500;
@@ -269,6 +269,10 @@ export function Hero({
             </li>
           ))}
         </ul>
+      </div>
+
+      <div className="hero__cue" aria-hidden="true">
+        <ChevronDown width={18} height={18} />
       </div>
     </section>
   );

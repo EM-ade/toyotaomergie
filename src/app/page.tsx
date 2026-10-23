@@ -119,7 +119,7 @@ export default function HomePage() {
       {/* 4 — AFTESALES: dark band, workshop. */}
       <Section tone="night" pad="none" aria-labelledby="service-title">
         <div className="service-band">
-          <div className="service-band__media">
+          <Reveal className="service-band__media">
             <ImageFrame
               slot={{
                 src: "/images/dealer/showroom-suv-interior.jpg",
@@ -130,7 +130,7 @@ export default function HomePage() {
               tone="night"
               sizes="(min-width: 900px) 50vw, 100vw"
             />
-          </div>
+          </Reveal>
           <div className="service-band__panel">
             <Reveal>
               <p className="eyebrow">Aftersales</p>

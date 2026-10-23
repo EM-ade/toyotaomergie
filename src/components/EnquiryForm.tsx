@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useId } from "react";
-import { ArrowRight, Check, Warning } from "./icons";
+import { ArrowRight, Warning } from "./icons";
 import { cx } from "@/lib/cx";
 import { brand, telHref, waHref } from "@/content/site";
 
@@ -48,6 +48,9 @@ export function EnquiryForm({
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<Status>("idle");
+  // Increments per submit so the shake animation can replay (a remount
+  // restarts CSS animations; field values are controlled and survive).
+  const [submitCount, setSubmitCount] = useState(0);
 
   const setValue = (name: string, value: string) => {
     setValues((v) => ({ ...v, [name]: value }));
@@ -82,11 +85,12 @@ export function EnquiryForm({
     e.preventDefault();
     const next = validate();
     setErrors(next);
+    setSubmitCount((c) => c + 1);
     setStatus(Object.keys(next).length ? "invalid" : "unavailable");
   };
 
   return (
-    <form className="enquiry" onSubmit={onSubmit} noValidate>
+    <form className="enquiry" onSubmit={onSubmit} noValidate key={submitCount}>
       {subject && (
         <p className="enquiry__subject">
           <span className="eyebrow eyebrow--bare">Enquiry subject</span>
@@ -105,10 +109,14 @@ export function EnquiryForm({
             .filter(Boolean)
             .join(" ");
           return (
-            <div
-              className={cx("field", f.type === "textarea" && "field--wide")}
-              key={f.name}
-            >
+              <div
+                className={cx(
+                  "field",
+                  f.type === "textarea" && "field--wide",
+                  err && "field--shake",
+                )}
+                key={f.name}
+              >
               <label htmlFor={id}>
                 {f.label}
                 {f.required ? (
@@ -196,7 +204,21 @@ export function EnquiryForm({
 
       {status === "unavailable" && (
         <div className="enquiry__result enquiry__result--info" role="status">
-          <Check width={18} height={18} />
+          {/* Stroke-based check so it can draw itself in. */}
+          <svg
+            viewBox="0 0 16 16"
+            width={18}
+            height={18}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="checkdraw"
+            aria-hidden="true"
+          >
+            <path d="m3 8.5 3.2 3.2L13 5" />
+          </svg>
           <div>
             <p className="enquiry__result-title">Thank you.</p>
             <p className="enquiry__result-body">

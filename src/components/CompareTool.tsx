@@ -104,7 +104,13 @@ export function CompareTool({ vehicles }: { vehicles: Vehicle[] }) {
           Select at least one model to compare specifications.
         </p>
       ) : (
-        <div className="compare__tablewrap" tabIndex={0} role="region" aria-label="Model comparison table">
+        <div
+          className="compare__tablewrap"
+          key={chosen.map((v) => v.slug).join("|")}
+          tabIndex={0}
+          role="region"
+          aria-label="Model comparison table"
+        >
           <table className="compare__table">
             <thead>
               <tr>

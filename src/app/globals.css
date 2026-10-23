@@ -5100,3 +5100,272 @@
     }
   }
 }
+@layer components {
+  /* -- Header: nav underline ------------------------------------------- */
+  .nav__link::after {
+    content: "";
+    position: absolute;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: -0.45rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-ui) var(--ease-ui);
+  }
+  .nav__link:hover::after,
+  .nav__link[data-active="true"]::after {
+    transform: scaleX(1);
+  }
+
+  /* -- Header: mega menu item stagger ----------------------------------
+     Panels mount on open, so the cascade replays every time. */
+  .mega__links li {
+    animation: itemIn 240ms var(--ease-reveal) both;
+  }
+  .mega__links li:nth-child(2) { animation-delay: 40ms; }
+  .mega__links li:nth-child(3) { animation-delay: 80ms; }
+  .mega__links li:nth-child(4) { animation-delay: 120ms; }
+  .mega__links li:nth-child(5) { animation-delay: 160ms; }
+  .mega__links li:nth-child(6) { animation-delay: 200ms; }
+  @keyframes itemIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* -- Hero: staged copy ------------------------------------------------
+     The title lines rise already; these stage everything around them. */
+  .hero__badge,
+  .hero__lede,
+  .hero__actions,
+  .hero__contact,
+  .hero__stats {
+    transition:
+      opacity var(--dur-reveal) var(--ease-reveal),
+      transform var(--dur-reveal) var(--ease-reveal);
+  }
+  .hero[data-revealed="false"] .hero__badge,
+  .hero[data-revealed="false"] .hero__lede,
+  .hero[data-revealed="false"] .hero__actions,
+  .hero[data-revealed="false"] .hero__contact,
+  .hero[data-revealed="false"] .hero__stats {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  .hero[data-revealed="true"] .hero__lede    { transition-delay: 360ms; }
+  .hero[data-revealed="true"] .hero__actions { transition-delay: 480ms; }
+  .hero[data-revealed="true"] .hero__contact { transition-delay: 580ms; }
+  .hero[data-revealed="true"] .hero__stats   { transition-delay: 680ms; }
+
+  /* -- Hero: scroll cue -------------------------------------------------- */
+  .hero__cue {
+    position: absolute;
+    left: 50%;
+    bottom: 1rem;
+    z-index: 4;
+    transform: translateX(-50%);
+    color: var(--red);
+    animation: cueBob 2.6s ease-in-out infinite;
+
+    pointer-events: none;
+  }
+  @keyframes cueBob {
+    0%, 100% { transform: translate(-50%, -3px); opacity: 0.9; }
+    50% { transform: translate(-50%, 3px); opacity: 0.5; }
+  }
+}
+
+@layer components {
+  /* -- Cards: arrow nudge + press -------------------------------------- */
+  .vcard__enquire svg,
+  .vcard__detail svg {
+    transition: transform var(--dur-ui) var(--ease-ui);
+  }
+  .vcard__enquire:hover svg,
+  .vcard__detail:hover svg {
+    transform: translateX(3px);
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  /* -- Aftersales band: media settle ------------------------------------ */
+  /* The Reveal wrapper rises by default; for this media we neutralise the
+     rise and settle the photo from a slight zoom instead. */
+  .service-band__media.reveal {
+    transform: none;
+    opacity: 1;
+  }
+  .service-band__media .image-frame {
+    transform: scale(1.06);
+    opacity: 0.4;
+    transition:
+      transform 900ms var(--ease-reveal),
+      opacity 800ms var(--ease-reveal);
+  }
+  .service-band__media.reveal[data-revealed="true"] .image-frame {
+    transform: none;
+    opacity: 1;
+  }
+
+  /* -- Story: year scale-in --------------------------------------------- */
+  .story__year {
+    display: inline-block;
+    transition:
+      opacity var(--dur-editorial) var(--ease-reveal) 60ms,
+      transform var(--dur-editorial) var(--ease-reveal) 60ms;
+  }
+  .reveal[data-revealed="false"] .story__year {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  .reveal[data-revealed="true"] .story__year {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* -- Locations: pin hop ----------------------------------------------- */
+  .reveal[data-revealed="true"] .loc-card__row svg {
+    animation: pinHop 420ms var(--ease-reveal) 150ms both;
+  }
+  @keyframes pinHop {
+    0% { transform: none; }
+    40% { transform: translateY(-3px); }
+    100% { transform: none; }
+  }
+
+  /* -- Vehicle browser --------------------------------------------------- */
+  .browser__countvalue {
+    display: inline-block;
+    animation: fadeUpSoft 240ms var(--ease-reveal) both;
+  }
+  .browser__grid,
+  .browser__empty {
+    animation: fadeUpSoft 260ms var(--ease-reveal) both;
+  }
+  @keyframes fadeUpSoft {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* -- Compare tool ------------------------------------------------------- */
+  .compare__tablewrap {
+    animation: fadeUpSoft 260ms var(--ease-reveal) both;
+  }
+  .compare__table tbody tr:hover > td {
+    background: color-mix(in srgb, var(--red) 4%, transparent);
+  }
+
+  /* -- Forms: shake + check draw ------------------------------------------ */
+  .field--shake {
+    animation: fieldShake 240ms var(--ease-ui);
+  }
+  @keyframes fieldShake {
+    0% { transform: none; }
+    25% { transform: translateX(-4px); }
+    55% { transform: translateX(3px); }
+    80% { transform: translateX(-1px); }
+    100% { transform: none; }
+  }
+  .checkdraw path {
+    stroke-dasharray: 16;
+    stroke-dashoffset: 16;
+    animation: drawCheck 360ms var(--ease-reveal) 120ms forwards;
+  }
+  @keyframes drawCheck {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* -- Vehicle product hero: staged intro ---------------------------------- */
+  .vhero__eyebrow,
+  .vhero__title,
+  .vhero__price,
+  .vhero__actions .btn,
+  .vhero__thumbs li,
+  .vhero__specs > div {
+    animation: fadeUp var(--dur-reveal) var(--ease-reveal) both;
+  }
+  .vhero__eyebrow { animation-delay: 120ms; }
+  .vhero__title { animation-delay: 200ms; }
+  .vhero__price { animation-delay: 300ms; }
+  .vhero__actions .btn:nth-child(1) { animation-delay: 320ms; }
+  .vhero__actions .btn:nth-child(2) { animation-delay: 390ms; }
+  .vhero__thumbs li:nth-child(1) { animation-delay: 420ms; }
+  .vhero__thumbs li:nth-child(2) { animation-delay: 460ms; }
+  .vhero__thumbs li:nth-child(3) { animation-delay: 500ms; }
+  .vhero__thumbs li:nth-child(4) { animation-delay: 540ms; }
+  .vhero__specs > div:nth-child(1) { animation-delay: 80ms; }
+  .vhero__specs > div:nth-child(2) { animation-delay: 140ms; }
+  .vhero__specs > div:nth-child(3) { animation-delay: 200ms; }
+  .vhero__specs > div:nth-child(4) { animation-delay: 260ms; }
+  .vhero__specs > div:nth-child(5) { animation-delay: 320ms; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* -- Interior page heroes: staged intro ----------------------------------- */
+  .page-hero .eyebrow,
+  .page-hero__title,
+  .page-hero__lede,
+  .page-hero__actions,
+  .page-hero__aside {
+    animation: fadeUp var(--dur-reveal) var(--ease-reveal) both;
+  }
+  .page-hero .eyebrow { animation-delay: 60ms; }
+  .page-hero__title { animation-delay: 140ms; }
+  .page-hero__lede { animation-delay: 280ms; }
+  .page-hero__actions { animation-delay: 360ms; }
+  .page-hero__aside { animation-delay: 420ms; }
+
+  /* -- Spec rows: stagger, capped ------------------------------------------- */
+  .spec-table tbody tr {
+    animation: fadeUp 300ms var(--ease-reveal) both;
+  }
+  .spec-table tbody tr:nth-child(2) { animation-delay: 30ms; }
+  .spec-table tbody tr:nth-child(3) { animation-delay: 60ms; }
+  .spec-table tbody tr:nth-child(4) { animation-delay: 90ms; }
+  .spec-table tbody tr:nth-child(5) { animation-delay: 120ms; }
+  .spec-table tbody tr:nth-child(n + 6) { animation-delay: 150ms; }
+
+  /* -- Idle ambient -----------------------------------------------------------
+     Ken Burns on the resting hero photo. Paused whenever the page is active
+     (html[data-idle="false"], driven by the shared idle controller). */
+  .hero__settled img {
+    animation: kenBurns var(--dur-idle) ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  html[data-idle="false"] .hero__settled img {
+    animation-play-state: paused;
+  }
+  @keyframes kenBurns {
+    from { transform: scale(1) translateY(0); }
+    to { transform: scale(1.04) translateY(-1%); }
+  }
+
+  /* CTA glow breath: primary hero button only, ambient-gated. */
+  .hero__actions .btn--primary {
+    animation: ctaGlow 4s ease-in-out infinite;
+  }
+  html[data-idle="false"] .hero__actions .btn--primary {
+    animation-play-state: paused;
+  }
+  @keyframes ctaGlow {
+    0%, 100% { box-shadow: var(--shadow-cta); }
+    50% { box-shadow: 0 14px 34px -12px rgba(235, 10, 30, 0.75); }
+  }
+
+  /* Logo dot pulse, homepage only (body contains a hero). */
+  body:has(.hero) .wordmark__dot {
+    animation: dotPulse 6s ease-in-out infinite;
+  }
+  html[data-idle="false"] .wordmark__dot {
+    animation-play-state: paused;
+  }
+  @keyframes dotPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+}

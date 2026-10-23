@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { brand, footerColumns, telHref, waHref } from "@/content/site";
+import { Reveal } from "@/components/Reveal";
 import { ArrowUpRight, Mail, Phone, Pin, WhatsApp } from "./icons";
 
 export function Footer() {
@@ -18,21 +19,19 @@ export function Footer() {
         </div>
 
         <div className="footer__grid">
-          {footerColumns.map((col) => (
-            <nav
-              key={col.title}
-              aria-label={col.title}
-              className="footer__col"
-            >
-              <h2 className="footer__coltitle">{col.title}</h2>
-              <ul>
-                {col.links.map((l) => (
-                  <li key={l.href}>
-                    <Link href={l.href}>{l.label}</Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+          {footerColumns.map((col, i) => (
+            <Reveal key={col.title} delay={i * 50} className="footer__colwrap">
+              <nav aria-label={col.title} className="footer__col">
+                <h2 className="footer__coltitle">{col.title}</h2>
+                <ul>
+                  {col.links.map((l) => (
+                    <li key={l.href}>
+                      <Link href={l.href}>{l.label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </Reveal>
           ))}
         </div>
 

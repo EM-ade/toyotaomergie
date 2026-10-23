@@ -84,9 +84,15 @@ export function VehicleBrowser({ vehicles }: { vehicles: Vehicle[] }) {
       </form>
 
       <h2 className="visually-hidden">Model results</h2>
-      <p className="browser__count" aria-live="polite">
-        {results.length} {results.length === 1 ? "model" : "models"} shown
-        {isFiltered ? " (filtered)" : ""}
+      <p
+        className="browser__count"
+        key={`${results.length}-${isFiltered}`}
+        aria-live="polite"
+      >
+        <span className="browser__countvalue">
+          {results.length} {results.length === 1 ? "model" : "models"} shown
+          {isFiltered ? " (filtered)" : ""}
+        </span>
       </p>
 
       {results.length === 0 ? (
@@ -94,11 +100,11 @@ export function VehicleBrowser({ vehicles }: { vehicles: Vehicle[] }) {
           <p className="display-4">No models match those filters.</p>
           <p className="prose-body">
             Try a different body type, or reset the filters to see the full
-            evidenced set.
+            range.
           </p>
         </div>
       ) : (
-        <ul className="browser__grid">
+        <ul className="browser__grid" key={`${body}-${isFiltered}-${results.length}`}>
           {results.map((v, i) => (
             <li key={v.slug}>
               <VehicleCard
