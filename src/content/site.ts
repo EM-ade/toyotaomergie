@@ -37,6 +37,10 @@ export const brand = {
   salesPhone: ["+2348038002222", "+2349035634038", "+2348167990752"],
   servicePhone: ["+2347088148071", "+2348025014218"],
   whatsapp: "2348038002222",
+  whatsapp2: "2349035634038",
+  socials: {
+    instagram: "https://www.instagram.com/omoregie_motors",
+  },
   emails: {
     sales: "info@omoregiemotorsng.com",
     service: "omoregiemotorsservice@gmail.com",
@@ -50,8 +54,8 @@ export const brand = {
 
 /** Display helpers for contact links. */
 export const telHref = (p: string) => `tel:${p.replace(/[^+\d]/g, "")}`;
-export const waHref = (message?: string) =>
-  `https://wa.me/${brand.whatsapp}${message ? `?text=${encodeURIComponent(message)}` : ""}`;
+export const waHref = (message?: string, phone: string = brand.whatsapp) =>
+  `https://wa.me/${phone}${message ? `?text=${encodeURIComponent(message)}` : ""}`;
 
 /* ---------------------------------------------------------------------------
    Navigation — grouped exactly as the live site groups it:

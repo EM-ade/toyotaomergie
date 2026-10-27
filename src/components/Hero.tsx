@@ -5,7 +5,7 @@ import Link from "next/link";
 import { TileCascade } from "./TileCascade";
 import type { ImageSlot } from "@/content/types";
 import { ArrowRight, ChevronDown, Phone, Shield } from "./icons";
-import { telHref, waHref } from "@/content/site";
+import { brand, telHref, waHref } from "@/content/site";
 
 const ROTATE_MS = 4500;
 
@@ -133,6 +133,17 @@ export function Hero({
               rel="noopener noreferrer"
             >
               Chat on WhatsApp
+            </a>
+            <a
+              href={waHref(
+                "Hello Omoregie Motors, I'd like to enquire about a Toyota.",
+                brand.whatsapp2,
+              )}
+              className="hero__wa"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              WhatsApp 0903 563 4038
             </a>
           </div>
         </div>

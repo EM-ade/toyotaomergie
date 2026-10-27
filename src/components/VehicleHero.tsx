@@ -32,6 +32,7 @@ export function VehicleHero({
   images,
   enquireHref,
   priceHref,
+  callHref,
   testDriveHref,
 }: {
   name: string;
@@ -42,6 +43,7 @@ export function VehicleHero({
   images: ImageSlot[];
   enquireHref: string;
   priceHref: string;
+  callHref: string;
   testDriveHref: string;
 }) {
   const [active, setActive] = useState(0);
@@ -113,6 +115,9 @@ export function VehicleHero({
               </a>
               <a className="btn btn--ondark" href={priceHref}>
                 Request price
+              </a>
+              <a className="btn btn--ondark" href={callHref}>
+                Call us
               </a>
             </div>
           </div>

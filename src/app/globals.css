@@ -2954,6 +2954,9 @@
       column-gap: var(--space-lg);
     }
   }
+  @media (min-width: 680px) {
+    .contactcards--wide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
   .contactcard {
     padding: var(--space-md) 0;
     border-bottom: 1px solid var(--line);
@@ -4305,6 +4308,9 @@
 
 @layer components {
   .contactcards { display: grid; gap: 0.6rem; }
+  @media (min-width: 680px) {
+    .contactcards--wide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
   .contactcard {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);

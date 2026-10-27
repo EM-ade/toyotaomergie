@@ -1,11 +1,13 @@
 import Link from "next/link";
 import type { Vehicle } from "@/content/types";
 import { ImageFrame } from "./ImageFrame";
-import { ArrowRight } from "./icons";
+import { ArrowRight, WhatsApp } from "./icons";
 import { cx } from "@/lib/cx";
+import { waHref } from "@/content/site";
 
-/** Dealers are the purchase route, so a card's enquiry always points at them. */
-const enquiryHref = (slug: string) => `/contact?vehicle=${slug}`;
+/** No enquiry backend, so a price request goes straight to WhatsApp. */
+const enquiryHref = (name: string) =>
+  waHref(`Hello Omoregie Motors, I'd like to request a price for the ${name}.`);
 
 /**
  * Vehicle card. Deliberately NOT a uniform grid tile: cards vary by the
@@ -99,17 +101,19 @@ export function VehicleCard({
       {/* The purchase actions sit outside the detail link so each is its own
           tap target — a card is a showroom unit, not a single hyperlink. */}
       <div className="vcard__actions">
-        <Link
-          href={enquiryHref(vehicle.slug)}
+        <a
+          href={enquiryHref(vehicle.name)}
           className={cx(
             "btn",
             isFeature ? "btn--primary" : "btn--ink",
             "vcard__enquire",
           )}
+          target="_blank"
+          rel="noopener noreferrer"
         >
           Request price
-          <ArrowRight width={15} height={15} />
-        </Link>
+          <WhatsApp width={15} height={15} />
+        </a>
         <Link href={href} className="link-rule vcard__detail">
           {isEvidenced ? "View model" : "Model details"}{" "}
           <ArrowRight width={14} height={14} />

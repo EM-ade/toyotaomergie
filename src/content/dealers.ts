@@ -67,7 +67,7 @@ export const dealers: Dealer[] = [
       {
         city: "Lekki Phase 1, Lagos",
         address: "3 Adedoyin Ogungbe Crescent, Plot 5 Block A12, 1st Roundabout, Lekki Phase 1, Lagos",
-        phone: "+234 816 799 0752",
+        phone: "+234 807 756 3305 / +234 816 799 0752",
         hours: SALES_HOURS,
         verification: "verified",
       },

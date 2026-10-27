@@ -93,12 +93,14 @@ export default async function DealerDetailPage({
               >
                 Get directions
               </a>
-              <Link
-                href={`/contact?dealer=${encodeURIComponent(dealer.name)}`}
+              <a
+                href={waHref(`Hello Omoregie Motors (${dealer.name}), I have an enquiry.`)}
                 className="btn btn--outline"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Send an enquiry
-              </Link>
+              </a>
             </div>
           </div>
           <div className="about-split__media">

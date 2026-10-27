@@ -3,7 +3,8 @@ import { Section, SectionHead } from "@/components/Section";
 import { Reveal } from "@/components/Reveal";
 import { ImageFrame } from "@/components/ImageFrame";
 import { ButtonLink, TextLink, VerifyNotice } from "@/components/ui";
-import { ArrowRight, Check } from "@/components/icons";
+import { ArrowRight, Check, WhatsApp } from "@/components/icons";
+import { waHref } from "@/content/site";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -31,13 +32,15 @@ export default function PartsPage() {
         actions={
           <>
             <ButtonLink
-              href="/contact?subject=Genuine%20parts%20enquiry"
-              icon={<ArrowRight width={16} height={16} />}
+              href={waHref(
+                "Hello Omoregie Motors, I need a genuine Toyota part. My vehicle is a:",
+              )}
+              icon={<WhatsApp width={16} height={16} />}
             >
               Parts enquiry
             </ButtonLink>
-            <ButtonLink href="/dealers" variant="outline">
-              Contact parts
+            <ButtonLink href="/faq#spare-parts" variant="outline">
+              Parts FAQ
             </ButtonLink>
           </>
         }

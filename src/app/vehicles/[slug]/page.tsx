@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { Section, SectionHead } from "@/components/Section";
 import { SpecTable } from "@/components/SpecTable";
 import { VehicleCard } from "@/components/VehicleCard";
@@ -8,7 +7,7 @@ import { VehicleHero } from "@/components/VehicleHero";
 import { Chip } from "@/components/ui";
 import { ArrowRight } from "@/components/icons";
 import { vehicleBySlug, vehicles } from "@/content/vehicles";
-import { waHref } from "@/content/site";
+import { brand, telHref, waHref } from "@/content/site";
 import { pageMetadata } from "@/lib/metadata";
 
 export function generateStaticParams() {
@@ -59,7 +58,11 @@ export default async function VehicleDetailPage({
         enquireHref={waHref(
           `Hello Omoregie Motors, I'd like to enquire about the ${vehicle.name}.`,
         )}
-        priceHref={`/contact?vehicle=${encodeURIComponent(vehicle.slug)}`}
+        priceHref={waHref(
+          `Hello Omoregie Motors, I'd like to request a price for the ${vehicle.name}.`,
+          brand.whatsapp2,
+        )}
+        callHref={telHref(brand.salesPhone[0])}
         testDriveHref="/service/request"
       />
 
@@ -127,13 +130,17 @@ export default async function VehicleDetailPage({
                     availability in Nigeria.
                   </p>
                   <div style={{ marginTop: "var(--space-md)" }}>
-                    <Link
-                      href={`/contact?vehicle=${encodeURIComponent(vehicle.slug)}`}
+                    <a
+                      href={waHref(
+                        `Hello Omoregie Motors, please send me the full specification for the ${vehicle.name}.`,
+                      )}
                       className="btn btn--ink"
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
                       Request specification
                       <ArrowRight width={16} height={16} />
-                    </Link>
+                    </a>
                   </div>
                 </div>
               </div>

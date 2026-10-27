@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FaInstagram } from "react-icons/fa6";
 import { brand, footerColumns, telHref, waHref } from "@/content/site";
 import { Reveal } from "@/components/Reveal";
 import { ArrowUpRight, Mail, Phone, Pin, WhatsApp } from "./icons";
@@ -46,6 +47,12 @@ export function Footer() {
               <WhatsApp width={15} height={15} />
               <a href={waHref()} target="_blank" rel="noopener noreferrer">
                 Chat on WhatsApp
+              </a>
+            </li>
+            <li>
+              <FaInstagram aria-hidden="true" />
+              <a href={brand.socials.instagram} target="_blank" rel="noopener noreferrer">
+                Instagram
               </a>
             </li>
             <li>

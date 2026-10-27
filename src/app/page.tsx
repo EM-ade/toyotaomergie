@@ -5,6 +5,7 @@ import { Reveal } from "@/components/Reveal";
 import { VehicleCard } from "@/components/VehicleCard";
 import { ImageFrame } from "@/components/ImageFrame";
 import { TextLink } from "@/components/ui";
+import { FaInstagram } from "react-icons/fa6";
 import {
   ArrowRight,
   Clock,
@@ -222,7 +223,7 @@ export default function HomePage() {
             }
           />
           <div className="loc-grid">
-            {dealers.slice(0, 3).map((d, i) => {
+            {dealers.map((d, i) => {
               const b = d.branches[0];
               return (
                 <Reveal key={d.slug} delay={i * 60}>
@@ -232,6 +233,10 @@ export default function HomePage() {
                     <p className="loc-card__row">
                       <Pin width={15} height={15} />
                       {b.address ?? b.city}
+                    </p>
+                    <p className="loc-card__row">
+                      <Phone width={15} height={15} />
+                      {b.phone?.split(" / ")[0] ?? "Call us"}
                     </p>
                     <p className="loc-card__row">
                       <Clock width={15} height={15} />
@@ -285,6 +290,15 @@ export default function HomePage() {
             >
               <WhatsApp width={16} height={16} />
               WhatsApp
+            </a>
+            <a
+              href={brand.socials.instagram}
+              className="btn btn--outline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaInstagram aria-hidden="true" />
+              Instagram
             </a>
           </Reveal>
         </div>
