@@ -5353,4 +5353,22 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.35; }
   }
+}@layer components {
+  /* Logo mark (Regemoto webp) in the masthead. */
+  .wordmark__logo {
+    display: inline-flex;
+    align-items: center;
+  }
+  .wordmark__logo img {
+    height: 3.1rem;
+    width: auto;
+  }
+  @media (max-width: 640px) {
+    .wordmark__logo img {
+      height: 2.4rem;
+    }
+  }
+  /* Retired typographic wordmark rules reuse: the name/dot elements no
+     longer render, so their old rules are dead by design. */
+  .wordmark__name { display: none; }
 }

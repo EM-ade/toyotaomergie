@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { brand, primaryNav, telHref, utilityNav, waHref } from "@/content/site";
@@ -16,8 +17,14 @@ import type { NavItem } from "@/content/types";
 function Wordmark() {
   return (
     <Link href="/" className="wordmark" aria-label="Omoregie Motors — home">
-      <span className="wordmark__name">
-        Omoregie<span className="wordmark__dot">.</span>
+      <span className="wordmark__logo">
+        <Image
+          src="/images/dealer/logo.webp"
+          alt="Regemoto logo — Omoregie Motors"
+          width={48}
+          height={48}
+          priority
+        />
       </span>
       <span className="wordmark__suffix">
         <span className="wordmark__certified">Certified Toyota Dealer</span>
